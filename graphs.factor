@@ -1,6 +1,6 @@
 USING: list assocs hashtables
 
-IN: graphs
+IN: graph-theory
 
 TUPLE: graph
 { vertices array }

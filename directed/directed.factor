@@ -18,16 +18,16 @@ M:: directed-graph get-weight ( src dst graph -- weight )
     ! Get the weight for the given dst vertex
     dst swap at ;
 
-M:: directed-graph get-neighbors ( vertex graph -- neighbors )
+M: directed-graph get-neighbors ( vertex graph -- neighbors )
     ! Get the edges
-    graph edges>>
-    ! Get the verticies connected to the given vertex
-    vertex swap at
+    edges>>
+    ! Get the vertices connected to the given vertex
+    at
     ! Get all neighbors
     keys ;
 
-M:: directed-graph get-all-vertices ( graph -- verticies )
-    graph edges>> keys ;
+M: directed-graph get-vertices ( graph -- vertices )
+    edges>> keys ;
 
 M:: directed-graph add-edge ( src dst weight graph -- )
     ! Get the edges
@@ -44,7 +44,7 @@ M:: directed-graph add-vertex ( vertex graph -- )
     ! Get the edges
     graph edges>> :> edges
     ! Test whether or not the vertex is a source vertex in the graph
-    vertex edges at* nip
+    vertex edges key?
     ! If not, add it as a source vertex
     [ H{ } clone vertex edges set-at ] unless ;
 
