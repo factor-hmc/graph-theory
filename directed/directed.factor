@@ -26,6 +26,9 @@ M:: directed-graph get-neighbors ( vertex graph -- neighbors )
     ! Get all neighbors
     keys ;
 
+M:: directed-graph get-all-vertices ( graph -- verticies )
+    graph edges>> keys ;
+
 M:: directed-graph add-edge ( src dst weight graph -- )
     ! Get the edges
     graph edges>> :> edges

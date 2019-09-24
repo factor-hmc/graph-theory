@@ -10,6 +10,9 @@ GENERIC: get-weight ( src dst graph -- weight ) flushable
 ! Get all edges reachable in one step from vertex
 GENERIC: get-neighbors ( vertex graph -- neighbors ) flushable
 
+! Get an array of all vertices
+GENERIC: get-all-vertices ( graph -- vertices ) flushable
+
 ! Add a vertex if it does not already exist
 GENERIC: add-vertex ( vertex graph -- )
 
