@@ -1,4 +1,5 @@
-USING: accessors assocs graph-theory hashtables kernel locals ;
+USING: accessors assocs graph-theory hash-sets hashtables kernel
+locals sequences sets vectors ;
 
 IN: graph-theory.directed
 
@@ -8,6 +9,7 @@ TUPLE: directed-graph { edges hashtable } ;
 
 ! Constructors
 : <directed-graph> ( -- graph ) H{ } clone directed-graph boa ;
+: >directed-graph ( assoc -- graph ) >hashtable directed-graph boa ;
 
 ! Create implementations of the methods of the graph class
 M:: directed-graph get-weight ( src dst graph -- weight )
