@@ -52,14 +52,17 @@ IN: graph-theory
     S [ dup length 0 > ] [
         ! put 1st element of S into L (need to put L on top of stack)
         S first :> n
-        swap { n } append
+        swap { n } append ! L on top of stack
 
         ! for each of n's neighbors m
         n graph get-neighbors [
             :> m
             ! remove the edge from m -> n in rev
+            m n rev remove-edge
             ! if m has no neighbors in rev: add to S
-            m . ! just printing them for now :o
+            m rev get-neighbors empty?
+            [ { m } S append :> S ] when
+            ! m . ! just printing them for now :o
         ] each
         ! drop
         ! END OF LOOP: remove 1st element from S
