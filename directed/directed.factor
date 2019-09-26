@@ -65,4 +65,19 @@ M:: directed-graph add-vertex ( vertex graph -- )
     ! If not, add it as a source vertex
     [ H{ } clone vertex edges set-at ] unless ;
 
+
+M:: directed-graph remove-vertex ( vertex graph -- )
+    ! Delete the vertex from the hashset
+    vertex graph edges>> delete-at
+    ! Get the list of vertices
+    graph get-vertices
+    ! Iterate through all other source edges and delete the vertex if it is
+    ! a destination
+    [ :> src
+    ! If the edge exists
+    src vertex graph has-edge
+    ! Remove the edge
+    [ src vertex graph remove-edge ] when ]
+    each ;
+
 INSTANCE: directed-graph graph

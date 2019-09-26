@@ -26,6 +26,9 @@ GENERIC: remove-edge ( src dst graph -- )
 ! Add a vertex if it does not already exist
 GENERIC: add-vertex ( vertex graph -- )
 
+! Remove a vertex, and all edges connected to it
+GENERIC: remove-vertex ( vertex graph -- )
+
 :: reachables ( vertex graph -- hash-set )
     HS{ } clone   :> seen
     ! if the vertex is in the graph
