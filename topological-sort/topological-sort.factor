@@ -1,4 +1,5 @@
-USING: arrays graph-theory graph-theory.directed hash-sets io kernel locals math sequences sets ;
+USING: arrays graph-theory graph-theory.directed hash-sets 
+io kernel locals math sequences sets vectors ;
 IN: graph-theory
 
 ! graph contains "edges" hashtable with:
@@ -41,36 +42,43 @@ IN: graph-theory
 ! returns empty list if the graph has cycles
 :: topological-sort ( graph -- {v1,...,vn} )
     ! reversed graph (can see number of inwards edges)
-    ! graph rev-graph :> rev
-    ! list of parentless vertices
-    graph rev-graph get-start-nodes :> S
-    ! L: sorted list of vertices (starts empty)
-    { } :> L 
+    graph rev-graph :> rev
+    ! vector of parentless vertices
+    graph rev-graph get-start-nodes >vector :> S
+    ! L: vector of sorted vertices (starts empty)
+    V{ } clone
 
-    S .
-    S length .
     ! while S is not empty
-    S [ length 0 > ] [
-        ! put 1st element of S into L
+    S [ dup length 0 > ] [
+        ! put 1st element of S into L (need to put L on top of stack)
         S first :> n
-        L { n } append :> L
-
-        ! for each of n's neighbors
-        ! n graph get-neighbors [
-
-        ! ] each
-
+        swap { n } append ! L on top of stack
+        
+        S
+        ! for each of n's neighbors m
+        n graph get-neighbors [
+            :> m
+            ! remove the edge from m -> n in rev
+            m n rev remove-edge
+            ! if m has no neighbors in rev: add to S
+           ! S
+            m rev get-neighbors empty?
+            [ { m } append ] when
+            ! :> S
+            "S in each" print dup . 
+        ] each
+        :> S
+        "S out of each" print S .
+        ! drop
         ! END OF LOOP: remove 1st element from S
-        rest S ! :> S
-        ! swap 1 -
+        S rest :> S
+        "rest of S" print S .
     ] while
 
-    drop
-    L
-    ;
+    drop ; ! get rid of S, leaving just L
 
 ! how do while loops work i'm dying
 : make-4 ( -- x )
    ! 0 :> i
     0 [ dup 4 < ]
-    [ dup . 1 + ] while ;
+    [ 1 + ] while ;
