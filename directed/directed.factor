@@ -9,11 +9,14 @@ TUPLE: directed-graph { edges hashtable } ;
 
 ! Constructors
 : <directed-graph> ( -- graph ) H{ } clone directed-graph boa ;
+
+! takes in a list of edges and outputs a weighted digraph; each edge
+! is of the format `{ src dst wt }`
 :: >directed-graph ( edges -- graph )
     H{ } clone :> g
     edges
     [ [ third ] [ second ] [ first ] tri :> src :> dst :> wt
-      src g at [ ] [ H{ } clone src g set-at src g at ] if*
+      src g at [ ] [ H{ } clone dup src g set-at ] if*
       [ wt dst ] dip set-at
     ] each
     g directed-graph boa
