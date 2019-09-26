@@ -7,37 +7,18 @@ IN: graph-theory
 !         key: destination
 !         value: cost
 
-
-! returns an array of nodes with no incoming edges
-:: get-start-nodes-old ( graph -- {v1,..vm} )
-    ! start w all of the vertices
-    graph get-vertices >hash-set :> start-nodes ! hashset for diff ease
-    graph get-vertices :> vertices ! all vertices stored in this array
-
-    ! for each vertex
-    vertices [
-        ! get all the neighbors for that vertex
-        graph get-neighbors >hash-set
-        ! remove any of those neighbors from start-nodes
-        start-nodes swap diff! :> start-nodes
-    ] each 
-    start-nodes members ; ! switch back to array to return
-
 ! returns an array of nodes in graph with no neighbors 
 ! (pas rev-graph to get array of nodes w no incoming edges)
 :: get-start-nodes ( graph -- seq )
-    graph get-vertices :> vertices
-    { } :> out
-
+    ! list that we will put the start nodes into
+    { }
     ! for each vertex v
-    vertices [
-        dup :> v
+    graph get-vertices [
+        :> v
         ! if v has no neighbors, append it to out
-        v get-neighbors empty?
-        [ out { v } append :> out ] [ ] if
-    ] each
-
-    out ;
+        v graph get-neighbors empty?
+        [ { v } append ] when
+    ] each ;
 
 ! creates a graph identical to graph but with the directions flipped
 :: rev-graph ( graph -- graph' )
@@ -60,18 +41,36 @@ IN: graph-theory
 ! returns empty list if the graph has cycles
 :: topological-sort ( graph -- {v1,...,vn} )
     ! reversed graph (can see number of inwards edges)
-    graph rev-graph :> rev
+    ! graph rev-graph :> rev
+    ! list of parentless vertices
+    graph rev-graph get-start-nodes :> S
     ! L: sorted list of vertices (starts empty)
     { } :> L 
 
+    S .
+    S length .
+    ! while S is not empty
+    S [ length 0 > ] [
+        ! put 1st element of S into L
+        S first :> n
+        L { n } append :> L
+
+        ! for each of n's neighbors
+        ! n graph get-neighbors [
+
+        ! ] each
+
+        ! END OF LOOP: remove 1st element from S
+        rest S ! :> S
+        ! swap 1 -
+    ] while
+
+    drop
     L
     ;
 
 ! how do while loops work i'm dying
-:: make-4 ( -- x )
+: make-4 ( -- x )
    ! 0 :> i
-
     0 [ dup 4 < ]
-    [ 1 + ] while
-    
-;
+    [ dup . 1 + ] while ;
