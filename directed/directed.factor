@@ -91,37 +91,4 @@ M:: directed-graph remove-vertex ( vertex graph -- )
     [ src vertex graph remove-edge ] when ]
     each ;
 
-M:: directed-graph connected-components ( graph -- ccs )
-    H{ } clone :> ccs
-    ! UNIMPLEMENTED
-    ccs ;
-
-M:: directed-graph reachables ( vertex graph -- vertices )
-    HS{ } clone   :> seen
-    ! if the vertex is in the graph
-    vertex graph get-vertices in?
-    [
-        ! the frontier starts with one vertex
-        vertex 1vector
-        ! iterate until the frontier is empty
-        [ dup empty? ]
-        ! bind the head of the list to 'vert', keeping the tail on the stack
-        [ unclip :> vert
-          ! if the vertex hasn't been visited yet
-          vert seen in? not
-          [
-              ! add it to the set of visited vertices
-              vert seen adjoin
-              ! add its neighbors to the frontier
-              vert graph get-neighbors append
-          ] when
-        ] until
-        ! remove the (now empty) frontier from the stack
-        drop
-    ] when
-    seen ;
-
-M: directed-graph connected? ( graph -- ? )
-    connected-components length 1 = ;
-
 INSTANCE: directed-graph graph

@@ -28,9 +28,53 @@ GENERIC: add-vertex ( vertex graph -- )
 ! Remove a vertex, and all edges connected to it
 GENERIC: remove-vertex ( vertex graph -- )
 
-! Get the connected components of the graph
-GENERIC: connected-components ( graph -- ccs ) flushable
 
-! Vertices reachable from 'vertex'
-GENERIC: reachables? ( vertex graph -- vertices )
+:: reachables ( vertex graph -- vertices )
+    HS{ } clone   :> seen
+    ! if the vertex is in the graph
+    vertex graph get-vertices in?
+    [
+        ! the frontier starts with one vertex
+        vertex 1vector
+        ! iterate until the frontier is empty
+        [ dup empty? ]
+        ! bind the head of the list to 'vert', keeping the tail on the stack
+        [ unclip :> vert
+          ! if the vertex hasn't been visited yet
+          vert seen in? not
+          [
+              ! add it to the set of visited vertices
+              vert seen adjoin
+              ! add its neighbors to the frontier
+              vert graph get-neighbors append
+          ] when
+        ] until
+        ! remove the (now empty) frontier from the stack
+        drop
+    ] when
+    seen ;
 
+
+:: connected-components ( graph -- ccs )
+    ! ccs = connected components
+    V{ } clone :> ccs
+    ! start with a set of all vertices
+    graph get-vertices >hash-set
+    ! until this set is null
+    [ dup null? ]
+    [
+        ! take an arbitrary element and find the reachable vertices
+        ! this forms a connected component (cc)
+        dup random graph reachables :> cc
+        ! add cc to ccs
+        cc ccs push
+        ! remove all of cc from the set of vertices
+        cc diff
+    ] until
+    ! remove the now empty set
+    drop
+    ! return the connected components
+    ccs ;
+
+: connected? ( graph -- ? )
+    connected-components length 1 = ;
