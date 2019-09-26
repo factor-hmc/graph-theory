@@ -13,7 +13,6 @@ GENERIC: get-neighbors ( vertex graph -- neighbors ) flushable
 ! Get an array of all vertices
 GENERIC: get-vertices ( graph -- vertices ) flushable
 
-
 ! Check if an edge with the given source and destination exists
 GENERIC: has-edge ( src dst graph -- ? ) flushable
 
@@ -25,6 +24,9 @@ GENERIC: remove-edge ( src dst graph -- )
 
 ! Add a vertex if it does not already exist
 GENERIC: add-vertex ( vertex graph -- )
+
+! Get the connected components of the graph
+GENERIC: connected-components ( graph -- ccs )
 
 :: reachables ( vertex graph -- hash-set )
     HS{ } clone   :> seen
@@ -50,28 +52,6 @@ GENERIC: add-vertex ( vertex graph -- )
       drop
     ] when
     seen ;
-
-! this should be only defined for undirected graphs
-:: connected-components ( graph -- ccs )
-    ! ccs = connected components
-    V{ } clone :> ccs
-    ! start with a set of all vertices
-    graph get-vertices >hash-set
-    ! until this set is null
-    [ dup null? ]
-    [
-      ! take an arbitrary element and find the reachable vertices
-      ! this forms a connected component (cc)
-      dup random graph reachables :> cc
-      ! add cc to ccs
-      cc ccs push
-      ! remove all of cc from the set of vertices
-      cc diff
-    ] until
-    ! remove the now empty set
-    drop
-    ! return the connected components
-    ccs ;
 
 ! alternate implementation for undirected graphs:
 ! :: connected? ( graph -- ? )

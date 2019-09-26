@@ -38,3 +38,24 @@ M:: undirected-graph remove-edge ( src dst graph -- )
     dst edges at :> srcs
     src srcs delete-at
     ;
+
+M:: connected-components ( graph -- ccs )
+    ! ccs = connected components
+    V{ } clone :> ccs
+    ! start with a set of all vertices
+    graph get-vertices >hash-set
+    ! until this set is null
+    [ dup null? ]
+    [
+        ! take an arbitrary element and find the reachable vertices
+        ! this forms a connected component (cc)
+        dup random graph reachables :> cc
+        ! add cc to ccs
+        cc ccs push
+        ! remove all of cc from the set of vertices
+        cc diff
+    ] until
+    ! remove the now empty set
+    drop
+    ! return the connected components
+    ccs ;
