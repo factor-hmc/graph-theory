@@ -25,6 +25,9 @@ GENERIC: remove-edge ( src dst graph -- )
 ! Add a vertex if it does not already exist
 GENERIC: add-vertex ( vertex graph -- )
 
+! Remove a vertex, and all edges connected to it
+GENERIC: remove-vertex ( vertex graph -- )
+
 ! Get the connected components of the graph
 GENERIC: connected-components ( graph -- ccs )
 
