@@ -53,20 +53,26 @@ IN: graph-theory
         ! put 1st element of S into L (need to put L on top of stack)
         S first :> n
         swap { n } append ! L on top of stack
-
+        
+        S
         ! for each of n's neighbors m
         n graph get-neighbors [
             :> m
             ! remove the edge from m -> n in rev
             m n rev remove-edge
             ! if m has no neighbors in rev: add to S
+           ! S
             m rev get-neighbors empty?
-            [ { m } S append :> S ] when
-            ! m . ! just printing them for now :o
+            [ { m } append ] when
+            ! :> S
+            "S in each" print dup . 
         ] each
+        :> S
+        "S out of each" print S .
         ! drop
         ! END OF LOOP: remove 1st element from S
-        rest S :> S
+        S rest :> S
+        "rest of S" print S .
     ] while
 
     drop ; ! get rid of S, leaving just L
