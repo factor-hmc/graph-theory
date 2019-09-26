@@ -31,6 +31,12 @@ M: directed-graph get-neighbors ( vertex graph -- neighbors )
 M: directed-graph get-vertices ( graph -- vertices )
     edges>> keys ;
 
+M:: directed-graph has-edge ( src dst graph -- ? )
+    ! Does the graph have the source edge?
+    src graph edges>> at*
+    ! If so, is it connected to the destination edge?
+    [ [ dst ] dip key? ] when ;
+
 M:: directed-graph add-edge ( src dst weight graph -- )
     ! Get the edges
     graph edges>> :> edges

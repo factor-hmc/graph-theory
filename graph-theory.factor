@@ -13,6 +13,10 @@ GENERIC: get-neighbors ( vertex graph -- neighbors ) flushable
 ! Get an array of all vertices
 GENERIC: get-vertices ( graph -- vertices ) flushable
 
+
+! Check if an edge with the given source and destination exists
+GENERIC: has-edge ( src dst graph -- ? ) flushable
+
 ! Add a vertex if it does not already exist
 GENERIC: add-vertex ( vertex graph -- )
 
