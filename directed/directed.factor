@@ -80,4 +80,9 @@ M:: directed-graph remove-vertex ( vertex graph -- )
     [ src vertex graph remove-edge ] when ]
     each ;
 
+M:: directed-graph connected-components ( graph -- ccs )
+    H{ } clone :> ccs
+    ! UNIMPLEMENTED
+    ccs ;
+
 INSTANCE: directed-graph graph
