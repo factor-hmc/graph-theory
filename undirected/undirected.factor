@@ -1,6 +1,5 @@
-USING: accessors assocs graph-theory graph-theory.directed hash-sets
-hashtables kernel locals sequences sets vectors ;
-
+USING: accessors assocs graph-theory graph-theory.directed
+hash-sets hashtables kernel locals random sequences sets vectors ;
 IN: graph-theory.undirected
 
 ! Define the properties of a undirected graph
@@ -39,7 +38,7 @@ M:: undirected-graph remove-edge ( src dst graph -- )
     src srcs delete-at
     ;
 
-M:: connected-components ( graph -- ccs )
+M:: undirected-graph connected-components ( graph -- ccs )
     ! ccs = connected components
     V{ } clone :> ccs
     ! start with a set of all vertices
