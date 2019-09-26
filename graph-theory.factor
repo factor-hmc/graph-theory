@@ -29,9 +29,10 @@ GENERIC: add-vertex ( vertex graph -- )
 GENERIC: remove-vertex ( vertex graph -- )
 
 ! Get the connected components of the graph
-GENERIC: connected-components ( graph -- ccs )
+GENERIC: connected-components ( graph -- ccs ) flushable
 
-:: reachables ( vertex graph -- hash-set )
+! What vertices are reachable from 'vertex'?
+:: reachables ( vertex graph -- vertices )
     HS{ } clone   :> seen
     ! if the vertex is in the graph
     vertex graph get-vertices in?
@@ -56,14 +57,6 @@ GENERIC: connected-components ( graph -- ccs )
     ] when
     seen ;
 
-! alternate implementation for undirected graphs:
-! :: connected? ( graph -- ? )
-!     graph get-vertices :> verts
-!     verts length       :> size
-!     verts [ graph reachables cardinality size = ] all?
-!
-! although perhaps the better thing to do is implement an algorithm for finding
-! strongly connected components for directed graphs and then using the same
-! definition for connected? used by undirected graphs.
+! Is the graph connected?
 : connected? ( graph -- ? )
     connected-components length 1 = ;
