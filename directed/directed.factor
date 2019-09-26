@@ -48,6 +48,15 @@ M:: directed-graph add-edge ( src dst weight graph -- )
     ! Add the new weight to the hashtable
     weight dst dsts set-at ;
 
+M:: directed-graph remove-edge ( src dst graph -- )
+    ! Get the edges
+    graph edges>> :> edges
+    ! Get the vertices connected to the source vertex
+    src edges at :> dsts
+    ! Remove the edge
+    dst dsts delete-at ;
+
+
 M:: directed-graph add-vertex ( vertex graph -- )
     ! Get the edges
     graph edges>> :> edges

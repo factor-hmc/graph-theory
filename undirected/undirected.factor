@@ -26,3 +26,15 @@ M:: undirected-graph add-edge ( src dst weight graph -- )
     dst edges at :> srcs
     ! Add the new weight to the hashtable
     weight src srcs set-at ;
+
+M:: undirected-graph remove-edge ( src dst graph -- )
+    ! Get the edges
+    graph edges>> :> edges
+    ! Get the vertices connected to the source vertex
+    src edges at :> dsts
+    ! Remove the edge
+    dst dsts delete-at
+    ! Now repeat for dst->src
+    dst edges at :> srcs
+    src srcs delete-at
+    ;

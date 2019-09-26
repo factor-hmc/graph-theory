@@ -17,11 +17,14 @@ GENERIC: get-vertices ( graph -- vertices ) flushable
 ! Check if an edge with the given source and destination exists
 GENERIC: has-edge ( src dst graph -- ? ) flushable
 
-! Add a vertex if it does not already exist
-GENERIC: add-vertex ( vertex graph -- )
-
 ! Add an edge if it does not already exist
 GENERIC: add-edge ( src dst weight graph -- )
+
+! Remove an edge from the graph
+GENERIC: remove-edge ( src dst graph -- )
+
+! Add a vertex if it does not already exist
+GENERIC: add-vertex ( vertex graph -- )
 
 :: reachables ( vertex graph -- hash-set )
     HS{ } clone   :> seen
