@@ -13,7 +13,7 @@ TUPLE: directed-graph { edges hashtable } ;
 ! takes in a list of edges and outputs a weighted digraph; each edge
 ! is of the format `{ src dst wt }`
 : >directed-graph ( edges -- graph )
-    [ <directed-graph> dup ] dip add-edges
+    [ <directed-graph> dup ] dip extend-graph
     ; inline
 
 ! defines syntax for digraphs, via `DG{ ...edges }`
