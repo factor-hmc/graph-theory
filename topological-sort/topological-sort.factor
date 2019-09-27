@@ -2,12 +2,6 @@ USING: arrays graph-theory graph-theory.directed hash-sets
 io kernel locals math sequences sets vectors ;
 IN: graph-theory
 
-! graph contains "edges" hashtable with:
-!     key: source
-!     value: hashtable with:
-!         key: destination
-!         value: cost
-
 ! returns an array of nodes in graph with no neighbors 
 ! (pas rev-graph to get array of nodes w no incoming edges)
 :: get-start-nodes ( graph -- seq )
@@ -36,49 +30,39 @@ IN: graph-theory
         ] each
     ] each
 
+    ! return the new graph
     new ;
 
-! topological sort - returns list of vertices in sorted order
-! returns empty list if the graph has cycles
+! topological sort - returns vector of vertices in sorted order
+! assumes a directed, acyclic graph
 :: topological-sort ( graph -- {v1,...,vn} )
     ! reversed graph (can see number of inwards edges)
     graph rev-graph :> rev
-    ! vector of parentless vertices
-    graph rev-graph get-start-nodes >vector :> S
+
     ! L: vector of sorted vertices (starts empty)
     V{ } clone
+    ! S vector of parentless vertices
+    graph rev-graph get-start-nodes >vector
 
     ! while S is not empty
-    S [ dup length 0 > ] [
+    [ dup length 0 > ] [
         ! put 1st element of S into L (need to put L on top of stack)
-        S first :> n
+        dup first :> n
         swap { n } append ! L on top of stack
-        
-        S
+
+        swap ! S on top of stack again
         ! for each of n's neighbors m
         n graph get-neighbors [
             :> m
             ! remove the edge from m -> n in rev
             m n rev remove-edge
             ! if m has no neighbors in rev: add to S
-           ! S
             m rev get-neighbors empty?
             [ { m } append ] when
-            ! :> S
-            "S in each" print dup . 
         ] each
-        :> S
-        "S out of each" print S .
-        ! drop
-        ! END OF LOOP: remove 1st element from S
-        S rest :> S
-        "rest of S" print S .
-    ] while
+        ! remove n from S for next loop
+        rest
+    ] while 
+    ! get rid of S, leaving just L
+    drop ; 
 
-    drop ; ! get rid of S, leaving just L
-
-! how do while loops work i'm dying
-: make-4 ( -- x )
-   ! 0 :> i
-    0 [ dup 4 < ]
-    [ 1 + ] while ;
