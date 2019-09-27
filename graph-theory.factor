@@ -1,4 +1,4 @@
-USING: hash-sets kernel locals random sequences sets vectors fry parser arrays ;
+USING: hash-sets kernel locals random sequences sets vectors fry parser arrays dlists deques prettyprint io ;
 
 IN: graph-theory
 
@@ -103,3 +103,39 @@ SYNTAX: -> dup pop scan-object scan-number 3array suffix! ;
 
 : connected? ( graph -- ? )
     connected-components length 1 = ;
+
+<PRIVATE
+
+:: reachable-search? ( graph src dst push pop -- ? )
+    HS{ src } clone :> seen
+    DL{ src } clone :> frontier
+    f :> found!
+    src dst =
+    [ t ]
+    [ [ frontier deque-empty? found or ]
+      [ frontier pop call( deque -- elt )
+        graph get-neighbors
+        [ dup seen in?
+          [ drop ]
+          [ dup dst =
+            [ drop t found! ]
+            [ [ seen adjoin ]
+              [ frontier push call( elt deque -- ) ]
+              bi
+            ] if
+          ] if
+        ] each
+      ] until
+      found
+    ] if
+    ;
+
+PRIVATE>
+
+: reachable-bfs? ( graph src dst -- ? )
+    [ push-back ] [ pop-front ] reachable-search?
+    ;
+
+: reachable-dfs? ( graph src dst -- ? )
+    [ push-back ] [ pop-back ] reachable-search?
+    ;
