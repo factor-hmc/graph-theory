@@ -1,5 +1,5 @@
 USING: accessors assocs graph-theory hash-sets hashtables kernel
-locals math math.order sequences sets vectors ;
+locals math math.order parser sequences sets vectors ;
 
 IN: graph-theory.directed
 
@@ -9,7 +9,15 @@ TUPLE: directed-graph { edges hashtable } ;
 
 ! Constructors
 : <directed-graph> ( -- graph ) H{ } clone directed-graph boa ;
-: >directed-graph ( assoc -- graph ) >hashtable directed-graph boa ;
+
+! takes in a list of edges and outputs a weighted digraph; each edge
+! is of the format `{ src dst wt }`
+: >directed-graph ( edges -- graph )
+    [ <directed-graph> dup ] dip add-edges
+    ; inline
+
+! defines syntax for digraphs, via `DG{ ...edges }`
+SYNTAX: DG{ \ } [ >directed-graph ] parse-literal ;
 
 ! Create implementations of the methods of the graph class
 M:: directed-graph get-weight ( src dst graph -- weight )
@@ -40,7 +48,7 @@ M:: directed-graph has-edge ( src dst graph -- ? )
 M:: directed-graph add-edge ( src dst weight graph -- )
     ! Get the edges
     graph edges>> :> edges
-    ! First make sure that both the src and dst verticies are in the graph
+    ! First make sure that both the src and dst vertices are in the graph
     src graph add-vertex
     dst graph add-vertex
     ! Get the hashtable of the vertices connected to src vertex

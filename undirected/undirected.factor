@@ -1,5 +1,5 @@
 USING: accessors assocs graph-theory graph-theory.directed
-hash-sets hashtables kernel locals random sequences sets vectors ;
+hash-sets hashtables kernel locals random sequences sets vectors parser ;
 IN: graph-theory.undirected
 
 ! Define the properties of a undirected graph
@@ -7,8 +7,13 @@ IN: graph-theory.undirected
 TUPLE: undirected-graph < directed-graph ;
 
 ! Constructors
-: <undirected-graph> ( -- graph ) H{ } clone undirected-graph boa ;
-: >undirected-graph ( assoc -- graph ) >hashtable undirected-graph boa ;
+: <undirected-graph> ( -- graph )
+    H{ } clone undirected-graph boa ;
+
+: >undirected-graph ( edges -- graph )
+    [ <undirected-graph> dup ] dip add-edges ;
+
+SYNTAX: G{ \ } [ >undirected-graph ] parse-literal ;
 
 M:: undirected-graph add-edge ( src dst weight graph -- )
     ! Get the edges
@@ -37,24 +42,3 @@ M:: undirected-graph remove-edge ( src dst graph -- )
     dst edges at :> srcs
     src srcs delete-at
     ;
-
-M:: undirected-graph connected-components ( graph -- ccs )
-    ! ccs = connected components
-    V{ } clone :> ccs
-    ! start with a set of all vertices
-    graph get-vertices >hash-set
-    ! until this set is null
-    [ dup null? ]
-    [
-        ! take an arbitrary element and find the reachable vertices
-        ! this forms a connected component (cc)
-        dup random graph reachables :> cc
-        ! add cc to ccs
-        cc ccs push
-        ! remove all of cc from the set of vertices
-        cc diff
-    ] until
-    ! remove the now empty set
-    drop
-    ! return the connected components
-    ccs ;
