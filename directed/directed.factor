@@ -1,5 +1,5 @@
 USING: accessors assocs graph-theory hash-sets hashtables kernel
-locals sequences sets vectors ;
+locals math math.order sequences sets vectors ;
 
 IN: graph-theory.directed
 
@@ -80,37 +80,83 @@ M:: directed-graph remove-vertex ( vertex graph -- )
     [ src vertex graph remove-edge ] when ]
     each ;
 
-M:: directed-graph connected-components ( graph -- ccs )
-    H{ } clone :> ccs
-    ! UNIMPLEMENTED
-    ccs ;
-
-M:: directed-graph reachables ( vertex graph -- vertices )
-    HS{ } clone   :> seen
-    ! if the vertex is in the graph
-    vertex graph get-vertices in?
+<PRIVATE
+:: strongconnect ( vertex ccs stack index lowlink onstack graph -- )
+    ! if the vertex already has an index, we've seen it before - ignore it
+    vertex index key? not
     [
-        ! the frontier starts with one vertex
-        vertex 1vector
-        ! iterate until the frontier is empty
-        [ dup empty? ]
-        ! bind the head of the list to 'vert', keeping the tail on the stack
-        [ unclip :> vert
-          ! if the vertex hasn't been visited yet
-          vert seen in? not
-          [
-              ! add it to the set of visited vertices
-              vert seen adjoin
-              ! add its neighbors to the frontier
-              vert graph get-neighbors append
-          ] when
-        ] until
-        ! remove the (now empty) frontier from the stack
-        drop
-    ] when
-    seen ;
+        vertex .
+        ! variable updates
+        "i" index at :> i
+        i vertex index set-at
+        i vertex lowlink set-at
+        ! update i for the next vertex
+        i 1 + "i" index set-at
+        vertex stack push
+        t vertex onstack set-at
+        ! for each neighbor
+        vertex graph get-neighbors
+        [
+            ! store the neighbor in a local
+            :> neighbor
+            ! if the neighbor is also uninitialized (there is a redundant check
+            ! here, since strongconnect also checks, we can move things around
+            ! later...)
+            neighbor index key? not
+            ! then
+            [
+                ! recurse
+                neighbor ccs stack index lowlink onstack graph strongconnect
+                ! the minimum of its lowlink and its neighbor's _lowlink_
+                vertex lowlink at neighbor lowlink at min :> m
+                ! update the lowlink of 'vertex' to this value
+                m vertex lowlink set-at
+            ]
+            ! else
+            [
+                ! when the neighbor is on the stack
+                neighbor onstack at
+                [
+                    ! the minimum of its lowlink and its neighbor's _index_
+                    vertex lowlink at neighbor index at min :> m
+                    ! update the lowlink of 'vertex' to this value
+                    m vertex lowlink set-at
+                ] when
+            ] if
+        ] each
+        ! if the vertex's lowlink is its own index (if it's a root of a scc)
+        vertex lowlink at vertex index at =
+        [
+            ! make a new cc set
+            HS{ } clone :> cc
+            [
+                ! pop 'v' from the stack
+                stack pop :> v
+                f v onstack set-at
+                ! add 'v' to the cc
+                v cc adjoin
+                ! stop after we reach 'v'
+                v vertex = not
+            ] loop
+            cc ccs push
+        ] when
+    ] when ;
+PRIVATE>
 
-M: directed-graph connected? ( graph -- ? )
-    connected-components length 1 = ;
+! why does it work? i just spent a few hours reading another tarjan paper, give
+! me a few more days... this is transliterated from wikipedia.
+M:: directed-graph connected-components ( graph -- ccs )
+    V{ } clone :> ccs
+    V{ } clone :> stack
+    ! maps a vertex to the order in which it was visited
+    H{ } clone :> index
+    ! the special "i" key represents the next index on the stack
+    0 "i" index set-at
+    ! maps a vertex to the smallest index of a node reachable from it
+    H{ } clone :> lowlink
+    ! is the vertex on the stack?
+    H{ } clone :> onstack
+    graph get-vertices [ ccs stack index lowlink onstack graph strongconnect ] each
+    ccs ;
 
 INSTANCE: directed-graph graph
