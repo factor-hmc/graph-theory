@@ -1,5 +1,5 @@
 USING: accessors assocs graph-theory graph-theory.directed
-hash-sets hashtables kernel locals random sequences sets vectors ;
+hash-sets hashtables kernel locals random sequences sets vectors parser ;
 IN: graph-theory.undirected
 
 ! Define the properties of a undirected graph
@@ -12,6 +12,8 @@ TUPLE: undirected-graph < directed-graph ;
 
 : >undirected-graph ( edges -- graph )
     [ <undirected-graph> dup ] dip add-edges ;
+
+SYNTAX: G{ \ } [ >undirected-graph ] parse-literal ;
 
 M:: undirected-graph add-edge ( src dst weight graph -- )
     ! Get the edges
