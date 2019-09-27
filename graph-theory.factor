@@ -1,4 +1,4 @@
-USING: hash-sets kernel locals random sequences sets vectors ;
+USING: hash-sets kernel locals random sequences sets vectors fry parser arrays ;
 
 IN: graph-theory
 
@@ -28,6 +28,16 @@ GENERIC: add-vertex ( vertex graph -- )
 ! Remove a vertex, and all edges connected to it
 GENERIC: remove-vertex ( vertex graph -- )
 
+! allows definition of edge via `src -> dst wt` (becomes { src dst wt })
+SYNTAX: -> dup pop scan-object scan-number 3array suffix! ;
+
+
+: add-edges ( graph edges -- )
+    [ over
+      [ [ first ] [ second ] [ third ] tri ] dip
+      add-edge
+    ] each drop
+    ;
 
 :: reachables ( vertex graph -- vertices )
     HS{ } clone   :> seen

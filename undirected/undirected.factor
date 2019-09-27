@@ -7,8 +7,11 @@ IN: graph-theory.undirected
 TUPLE: undirected-graph < directed-graph ;
 
 ! Constructors
-: <undirected-graph> ( -- graph ) H{ } clone undirected-graph boa ;
-: >undirected-graph ( assoc -- graph ) >hashtable undirected-graph boa ;
+: <undirected-graph> ( -- graph )
+    H{ } clone undirected-graph boa ;
+
+: >undirected-graph ( edges -- graph )
+    [ <undirected-graph> dup ] dip add-edges ;
 
 M:: undirected-graph add-edge ( src dst weight graph -- )
     ! Get the edges

@@ -1,5 +1,5 @@
 USING: accessors assocs graph-theory hash-sets hashtables kernel
-locals sequences sets vectors ;
+locals sequences sets vectors parser ;
 
 IN: graph-theory.directed
 
@@ -12,15 +12,12 @@ TUPLE: directed-graph { edges hashtable } ;
 
 ! takes in a list of edges and outputs a weighted digraph; each edge
 ! is of the format `{ src dst wt }`
-:: >directed-graph ( edges -- graph )
-    H{ } clone :> g
-    edges
-    [ [ third ] [ second ] [ first ] tri :> src :> dst :> wt
-      src g at [ ] [ H{ } clone dup src g set-at ] if*
-      [ wt dst ] dip set-at
-    ] each
-    g directed-graph boa
+: >directed-graph ( edges -- graph )
+    [ <directed-graph> dup ] dip add-edges
     ; inline
+
+! defines syntax for digraphs, via `DG{ ...edges }`
+SYNTAX: DG{ \ } [ >directed-graph ] parse-literal ;
 
 ! Create implementations of the methods of the graph class
 M:: directed-graph get-weight ( src dst graph -- weight )
