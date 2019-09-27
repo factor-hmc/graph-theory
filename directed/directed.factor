@@ -93,7 +93,6 @@ M:: directed-graph remove-vertex ( vertex graph -- )
     ! if the vertex already has an index, we've seen it before - ignore it
     vertex index key? not
     [
-        vertex .
         ! variable updates
         "i" index at :> i
         i vertex index set-at
