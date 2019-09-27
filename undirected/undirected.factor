@@ -11,7 +11,7 @@ TUPLE: undirected-graph < directed-graph ;
     H{ } clone undirected-graph boa ;
 
 : >undirected-graph ( edges -- graph )
-    [ <undirected-graph> dup ] dip add-edges ;
+    [ <undirected-graph> dup ] dip extend-graph ;
 
 SYNTAX: G{ \ } [ >undirected-graph ] parse-literal ;
 

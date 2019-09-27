@@ -31,12 +31,27 @@ GENERIC: remove-vertex ( vertex graph -- )
 ! allows definition of edge via `src -> dst wt` (becomes { src dst wt })
 SYNTAX: -> dup pop scan-object scan-number 3array suffix! ;
 
-
-: add-edges ( graph edges -- )
-    [ over
-      [ [ first ] [ second ] [ third ] tri ] dip
-      add-edge
-    ] each drop
+! Extends a graph by a list of edges and vertices.  Each item in
+! verts/edges is interpreted as follows:
+!
+! - if it is an array, it is interpreted as an edge.  It must be of
+!   the form { src dst wt } (using the arrow syntax, one could write
+!     src -> dst wt
+!   )
+!
+! - otherwise, it is interpreted as a vertex and added directly as a
+!   vertex.
+: extend-graph ( graph verts/edges -- )
+    [ 2dup array?
+      [ ! parse as edge: { src dst wt }
+          [ [ first ] [ second ] [ third ] tri ] dip add-edge
+      ]
+      [ ! parse as vertex
+          add-vertex
+      ]
+      if
+    ]
+    each drop
     ;
 
 :: reachables ( vertex graph -- vertices )
