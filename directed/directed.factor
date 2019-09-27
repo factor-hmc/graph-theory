@@ -48,7 +48,7 @@ M:: directed-graph has-edge ( src dst graph -- ? )
 M:: directed-graph add-edge ( src dst weight graph -- )
     ! Get the edges
     graph edges>> :> edges
-    ! First make sure that both the src and dst verticies are in the graph
+    ! First make sure that both the src and dst vertices are in the graph
     src graph add-vertex
     dst graph add-vertex
     ! Get the hashtable of the vertices connected to src vertex
